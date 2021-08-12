@@ -9,7 +9,7 @@ class config():
     train_size = (512, 512)
     train_model = 'resnet50' #'ENet'
     pnum = 79
-    crop_name = '05'
+    crop_name = '04'
     num_classes = 3
 
     # testing args
