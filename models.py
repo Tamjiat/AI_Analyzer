@@ -1,12 +1,32 @@
-import torch.nn as nn
-import torchvision.models as models
+from keras.models import Sequential
+from keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense, Activation, BatchNormalization
+from config import config as cfg
+import keras
 
-dict_backbone = {'resnet50' : models.resnet50}
+def get_model(X_train, nb_classes):
+    model = Sequential()
+    model.add(Conv2D(32, (3, 3), input_shape=X_train.shape[1:], padding='same'))
+    model.add(Activation('relu'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Dropout(0.25))
 
-def get_model(model_name='resnet50', num_classes=3, pretrained=False): # use pretrained backbone
-    assert model_name in dict_backbone.keys()
-    
-    network = dict_backbone[model_name](pretrained=pretrained)
-    network.fc = nn.Linear(network.fc.in_features, num_classes)
-    
-    return network
+    model.add(Conv2D(64, (3, 3), padding='same'))
+    model.add(Activation('relu'))
+
+    model.add(Conv2D(64, (3, 3)))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Dropout(0.25))
+
+    # 전결합층
+    model.add(Flatten())    # 벡터형태로 reshape
+    model.add(Dense(512))   # 출력
+    model.add(Activation('relu'))
+    model.add(Dropout(0.5))
+
+    model.add(Dense(nb_classes))
+    model.add(Activation('softmax'))
+    # 모델 구축하기
+    model.compile(loss='categorical_crossentropy',   # 최적화 함수 지정
+    optimizer='rmsprop',
+    metrics=['accuracy'])
+    return model

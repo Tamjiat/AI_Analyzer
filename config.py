@@ -1,16 +1,10 @@
+
 class config():
-    path_prefix = '.'
-    path_data = 'dataset'
+    FAST_RUN = False
+    IMAGE_WIDTH = 160
+    IMAGE_HEIGHT = 160
+    IMAGE_SIZE=(IMAGE_WIDTH, IMAGE_HEIGHT)
+    IMAGE_CHANNELS = 3
 
-    dict_label = {'04': {'00': 0, '07': 1, '08': 2}}
-
-    # general args
-    gpu = 0
-    train_size = (512, 512)
-    train_model = 'resnet50' #'ENet'
-    pnum = 79
-    crop_name = '04'
-    num_classes = 3
-
-    # testing args
-    test_model_path = 'weights/sample.pt'
+    image_path = "/media/user/My Passport/AI HUB2/노지 작물 질병 진단 이미지/Training/고추/image/"
+    json_path = "/media/user/My Passport/AI HUB2/노지 작물 질병 진단 이미지/Training/고추/json/"
