@@ -1,4 +1,5 @@
 from flask import Flask ,render_template, request
+import ssl
 from werkzeug.utils import secure_filename
 from AI_Test import AI_Test
 import pymysql
@@ -7,16 +8,27 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Flask(__name__) 
+@app.route("/",methods=['GET','POST'])
+def hello():
+    return "HELLO"
 
-@app.route('/test_post',methods=['GET','POST'])
+@app.route("/test",methods=['GET','POST'])
+def t():
+    print(request.is_json)
+    params = request.get_json()
+    print(params)
+
+@app.route('/ai_post',methods=['GET','POST'])
 def post():
-    if request.method=='POST':
         path_dir = "../tamjiat_web/public/upload"
         file_list = os.listdir(path_dir)
         name = ""
-        lists = request.args['file_name']
-        uuid = request.args['cduuid']
-        print(lists)
+        print(request.form['file_name'])
+        print(request.form['cduuid'])
+        
+        lists = request.form['file_name']
+        uuid = request.form['cduuid']
+
         for i in file_list:
             if i == lists:
                 name = i
@@ -28,7 +40,10 @@ def post():
                      db=os.environ.get("DB_database"),
                      charset='utf8')
         cursor = db.cursor()
-        sql = "UPDATE userDcrop SET AICheck = '완료' , cdName = '"+result+"', iscdCheck='true' where cduuid = '"+uuid+"'"
+        if result=="정상":
+            sql = "UPDATE userDcrop SET AICheck = '완료' , cdName = '"+result+"', iscdCheck='false' where cduuid = '"+uuid+"'"
+        else:
+            sql = "UPDATE userDcrop SET AICheck = '완료' , cdName = '"+result+"', iscdCheck='true' where cduuid = '"+uuid+"'"
         cursor.execute(sql)
         db.commit()
         db.close()
@@ -36,4 +51,6 @@ def post():
     
 
 if __name__ == '__main__':
-    app.run(host='192.168.0.23',port=5000,debug=True)
+    ssl_context= ssl.SSLContext(ssl.PROTOCOL_TLS)
+    ssl_context.load_cert_chain(certfile='server.crt',keyfile='server.key.origin',password='qwerty12')
+    app.run(host='192.168.0.23',port=5000,debug=True,ssl_context=ssl_context)
